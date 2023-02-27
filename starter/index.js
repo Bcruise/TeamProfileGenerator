@@ -12,6 +12,8 @@ const generateTeam = require("./src/page-template.js");
 
 // TODO: Write Code to gather information about the development team members, and render the HTML file.
 
+
+// inquirer questions for team manager details
 const teamManagerQuestions = [
   {
     type: "input",
@@ -35,6 +37,7 @@ const teamManagerQuestions = [
   }
 ];
 
+// select create and engineer, create intern, or finish building team
 const optionQuestion = [
   {
     type: "list",
@@ -44,6 +47,7 @@ const optionQuestion = [
   },
 ];
 
+// inquirer questions for engineer details
 const engineerQuestions = [
   {
     type: "input",
@@ -67,6 +71,7 @@ const engineerQuestions = [
   },
 ];
 
+// inquirer questions for intern details
 const internQuestions = [
   {
     type: "input",
@@ -90,21 +95,26 @@ const internQuestions = [
   },
 ];
 
+// array to hold each time member class
 const teamMembers = [];
 
+// provide option questions, then ask engineer questions if selected, then intern questions if selected
 async function optionsFunction() {
   while (optionQuestion.WhichOptionsNext !== "Finish building team") {
     let options = await inquirer.prompt(optionQuestion);
+    // prompt to ask engineer questions
     if (options.WhichOptionsNext == "Add an Engineer") {
       await inquirer.prompt(engineerQuestions).then(async(engineerAnswers) => {
+        // set engineer class
         let engineer = new Engineer(engineerAnswers.EngineersName, engineerAnswers.EngineersId, engineerAnswers.EngineersEmailAddress, engineerAnswers.EngineersGitHub, 'Engineer');
         teamMembers.push(engineer);
       });
+    // prompt to ask intern questions
     } else if (options.WhichOptionsNext == "Add an Intern") {
       await inquirer.prompt(internQuestions).then(async(internAnswers) => {
+        //set intern class
         let intern = new Intern(internAnswers.InternsName, internAnswers.InternsId, internAnswers.InternsEmailAddress, internAnswers.InternsSchool, 'Intern');
-        teamMembers.push(intern);
-        
+        teamMembers.push(intern);        
       });
     } else {
         break;
@@ -116,11 +126,14 @@ async function init() {
   try {
     // prompt for manager questions first
     inquirer.prompt(teamManagerQuestions).then(async(managerAnswers) => {
+      //set manager class
       const manager = new Manager(managerAnswers.TeamManagersName, managerAnswers.TeamManagersId, managerAnswers.TeamManagersEmailAddress, managerAnswers.TeamManagersOfficeNumber, 'Manager');
       teamMembers.push(manager);
       await optionsFunction();
+      //send to path-template.js to create html 
       const toGenerateHTML = generateTeam(teamMembers);
-      fs.writeFileSync('team.html', toGenerateHTML);
+      //write file and send to output folder
+      fs.writeFileSync(outputPath, toGenerateHTML);
     });     
     
   } catch (err) {

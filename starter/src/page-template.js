@@ -62,6 +62,7 @@ const generateTeam = team => {
         `;
     };
 
+    // create array then push to html array
     const html = [];
 
     html.push(team
